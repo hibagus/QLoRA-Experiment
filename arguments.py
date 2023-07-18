@@ -1,3 +1,14 @@
+#%% Import Libraries
+# Python
+
+from dataclasses import dataclass, field
+from typing import Optional, Dict, Sequence
+
+# Hugging Face
+import transformers
+import bitsandbytes as bnb
+
+#%% ModelArguments class
 @dataclass
 class ModelArguments:
     model_name_or_path: Optional[str] = field(
@@ -12,6 +23,7 @@ class ModelArguments:
         metadata={"help": "Enables using Huggingface auth token from Git Credentials."}
     )
 
+#%% DataArguments class
 @dataclass
 class DataArguments:
     eval_dataset_size: int = field(
@@ -48,6 +60,7 @@ class DataArguments:
         metadata={"help": "Which dataset format is used. [alpaca|chip2|self-instruct|hh-rlhf]"}
     )
 
+#%% TrainingArguments class
 @dataclass
 class TrainingArguments(transformers.Seq2SeqTrainingArguments):
     cache_dir: Optional[str] = field(
@@ -136,6 +149,7 @@ class TrainingArguments(transformers.Seq2SeqTrainingArguments):
     save_steps: int = field(default=250, metadata={"help": 'How often to save a model'})
     save_total_limit: int = field(default=40, metadata={"help": 'How many checkpoints to save before the oldest is overwritten'})
 
+#%% GenerationArguments class
 @dataclass
 class GenerationArguments:
     # For more hyperparameters check:
@@ -167,3 +181,4 @@ class GenerationArguments:
     repetition_penalty: Optional[float] = field(default=1.0)
     length_penalty: Optional[float] = field(default=1.0)
     no_repeat_ngram_size: Optional[int] = field(default=0)
+# %%
