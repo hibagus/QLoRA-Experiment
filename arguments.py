@@ -2,11 +2,10 @@
 # Python
 
 from dataclasses import dataclass, field
-from typing import Optional, Dict, Sequence
+from typing import Optional
 
 # Hugging Face
 import transformers
-import bitsandbytes as bnb
 
 #%% ModelArguments class
 @dataclass
