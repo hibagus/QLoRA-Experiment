@@ -21,6 +21,7 @@ import numpy as np
 
 # PyTorch
 import torch
+from torch.utils.tensorboard import SummaryWriter
 
 # Hugging Face
 import transformers
