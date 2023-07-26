@@ -201,6 +201,10 @@ class TrainingArguments(transformers.Seq2SeqTrainingArguments):
         default=40, 
         metadata={"help": 'How many checkpoints to save before the oldest is overwritten'}
         )
+    method: str = field(
+        default='qlora', 
+        metadata={"help": 'Select the finetuning method: std, lora, or qlora'}
+        )
 
 #%% GenerationArguments class
 @dataclass

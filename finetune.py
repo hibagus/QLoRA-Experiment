@@ -81,7 +81,14 @@ def train():
     if completed_training:
         print('Detected that training was already completed!')
 
-    model = get_accelerate_model(args, checkpoint_dir)
+    if args.method == "std":
+        model = get_accelerate_model_standard(args, checkpoint_dir)
+    elif args.method == "lora":
+        model = get_accelerate_model_lora(args, checkpoint_dir)
+    elif args.method == "qlora":
+        model = get_accelerate_model_qlora(args, checkpoint_dir)
+    else:
+        raise ValueError(f"Unsupported fine tuning method")
 
     model.config.use_cache = False
     print_trainable_parameters(args, model)
