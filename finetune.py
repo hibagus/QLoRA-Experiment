@@ -147,15 +147,15 @@ def train():
     if args.do_mmlu_eval:
         if args.mmlu_dataset == 'mmlu-zs':
             mmlu_dataset = load_dataset("json", data_files={
-                'eval': 'data/mmlu/zero_shot_mmlu_val.json',
-                'test': 'data/mmlu/zero_shot_mmlu_test.json',
+                'eval': args.mmlu_path + 'zero_shot_mmlu_val.json',
+                'test': args.mmlu_path + 'zero_shot_mmlu_test.json',
             })
             mmlu_dataset = mmlu_dataset.remove_columns('subject')
         # MMLU Five-shot (Eval/Test only)
         elif args.mmlu_dataset == 'mmlu' or args.mmlu_dataset == 'mmlu-fs':
             mmlu_dataset = load_dataset("json", data_files={
-                'eval': 'data/mmlu/five_shot_mmlu_val.json',
-                'test': 'data/mmlu/five_shot_mmlu_test.json',
+                'eval': args.mmlu_path + 'five_shot_mmlu_val.json',
+                'test': args.mmlu_path + 'five_shot_mmlu_test.json',
             })
             # mmlu_dataset = mmlu_dataset.remove_columns('subject')
         mmlu_dataset = mmlu_dataset[args.mmlu_split]

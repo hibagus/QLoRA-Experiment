@@ -77,6 +77,10 @@ class TrainingArguments(transformers.Seq2SeqTrainingArguments):
         default='mmlu-fs',
         metadata={"help": "MMLU dataset to use: options are `mmlu-zs` for zero-shot or `mmlu-fs` for few shot."}
     )
+    mmlu_path: Optional[str] = field(
+        default='data/mmlu/',
+        metadata={"help": "MMLU dataset location"}
+    )
     do_mmlu_eval: Optional[bool] = field(
         default=False,
         metadata={"help": "Whether to run the MMLU evaluation."}
