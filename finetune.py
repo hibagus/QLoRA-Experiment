@@ -22,6 +22,7 @@ import numpy as np
 # PyTorch
 import torch
 from torch.utils.tensorboard import SummaryWriter
+from torch.profiler import profile, record_function, ProfilerActivity
 
 # Hugging Face
 import transformers
@@ -91,7 +92,10 @@ def train():
         raise ValueError(f"Unsupported fine tuning method")
 
     model.config.use_cache = False
+    print("Adapter-attached Model Configuration")
     print_trainable_parameters(args, model)
+    print("After Adapter-attached Data Type")
+    print_model_dtype(model)
     print('loaded model')
     set_seed(args.seed)
 
@@ -208,35 +212,62 @@ def train():
         trainer.add_callback(MMLUEvalCallback)
 
     # Verifying the datatypes.
-    dtypes = {}
-    for _, p in model.named_parameters():
-        dtype = p.dtype
-        if dtype not in dtypes: dtypes[dtype] = 0
-        dtypes[dtype] += p.numel()
-    total = 0
-    for k, v in dtypes.items(): total+= v
-    for k, v in dtypes.items():
-        print(k, v, v/total)
+    print("Before Training Model Configuration")
+    print_trainable_parameters(args, model)
+    print("Before Training Data Type")
+    print_model_dtype(model)
 
     all_metrics = {"run_name": args.run_name}
     # Training
     if args.do_train:
-        logger.info("*** Train ***")
-        # Note: `resume_from_checkpoint` not supported for adapter checkpoints by HF.
-        # Currently adapter checkpoint is reloaded as expected but optimizer/scheduler states are not.
-        train_result = trainer.train()
-        metrics = train_result.metrics
-        trainer.log_metrics("train", metrics)
-        trainer.save_metrics("train", metrics)
-        trainer.save_state()
-        all_metrics.update(metrics)
+        if args.profile:
+            logger.info("*** Train ***")
+            logger.info("*** Profiler Enabled ***")
+            # Note: `resume_from_checkpoint` not supported for adapter checkpoints by HF.
+            # Currently adapter checkpoint is reloaded as expected but optimizer/scheduler states are not.
+            #torch.profiler.tensorboard_trace_handler(args.output_dir+'/profiler')
+            with profile(activities=[ProfilerActivity.CUDA],record_shapes=True, profile_memory=True, with_flops=True, with_modules=True) as prof:
+                with record_function("model_training"):
+                    train_result = trainer.train()
+                
+            metrics = train_result.metrics
+            trainer.log_metrics("train", metrics)
+            trainer.save_metrics("train", metrics)
+            trainer.save_state()
+            all_metrics.update(metrics)
+
+            print(prof.key_averages().table(row_limit=-1))
+        
+        else:
+            logger.info("*** Train ***")
+            # Note: `resume_from_checkpoint` not supported for adapter checkpoints by HF.
+            # Currently adapter checkpoint is reloaded as expected but optimizer/scheduler states are not.
+            train_result = trainer.train()
+            metrics = train_result.metrics
+            trainer.log_metrics("train", metrics)
+            trainer.save_metrics("train", metrics)
+            trainer.save_state()
+            all_metrics.update(metrics)
+
+        
     # Evaluation
     if args.do_eval:
-        logger.info("*** Evaluate ***")
-        metrics = trainer.evaluate(metric_key_prefix="eval")
-        trainer.log_metrics("eval", metrics)
-        trainer.save_metrics("eval", metrics)
-        all_metrics.update(metrics)
+        if args.profile:
+            logger.info("*** Evaluate ***")
+            logger.info("*** Profiler Enabled ***")
+            with profile(activities=[ProfilerActivity.CUDA],record_shapes=False, profile_memory=True, with_flops=True, with_modules=True) as prof:
+                with record_function("model_evaluate"):
+                    metrics = trainer.evaluate(metric_key_prefix="eval")
+            trainer.log_metrics("eval", metrics)
+            trainer.save_metrics("eval", metrics)
+            all_metrics.update(metrics)
+            print(prof.key_averages().table(row_limit=-1))
+        else:
+            logger.info("*** Evaluate ***")
+            metrics = trainer.evaluate(metric_key_prefix="eval")
+            trainer.log_metrics("eval", metrics)
+            trainer.save_metrics("eval", metrics)
+            all_metrics.update(metrics)
     # Prediction
     if args.do_predict:
         logger.info("*** Predict ***")

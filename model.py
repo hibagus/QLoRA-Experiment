@@ -120,6 +120,12 @@ def get_accelerate_model_qlora(args, checkpoint_dir):
     if args.gradient_checkpointing:
         model.gradient_checkpointing_enable()
 
+    # Base Model:
+    print("Base Model Configuration")
+    print_trainable_parameters(args, model)
+    print_model_dtype(model)
+   
+
     if not args.full_finetune:
         if checkpoint_dir is not None:
             print("Loading adapters from checkpoint.")
@@ -186,6 +192,11 @@ def get_accelerate_model_standard(args, checkpoint_dir):
 
     if args.gradient_checkpointing:
         model.gradient_checkpointing_enable()
+    
+    # Base Model:
+    print("Base Model Configuration")
+    print_trainable_parameters(args, model)
+    print_model_dtype(model)
 
     #if not args.full_finetune:
     #    config = PeftConfig(
@@ -234,6 +245,11 @@ def get_accelerate_model_lora(args, checkpoint_dir):
     if args.gradient_checkpointing:
         model.gradient_checkpointing_enable()
 
+    # Base Model:
+    print("Base Model Configuration")
+    print_trainable_parameters(args, model)
+    print_model_dtype(model)
+
     if not args.full_finetune:
         if checkpoint_dir is not None:
             print("Loading adapters from checkpoint.")
@@ -280,5 +296,19 @@ def print_trainable_parameters(args, model):
         f"all params: {all_param} || "
         f"trainable: {100 * trainable_params / all_param}"
     )
+
+def print_model_dtype(model):
+    """
+    Prints the number of data types inside the model
+    """
+    dtypes = {}
+    for _, p in model.named_parameters():
+        dtype = p.dtype
+        if dtype not in dtypes: dtypes[dtype] = 0
+        dtypes[dtype] += p.numel()
+    total = 0
+    for k, v in dtypes.items(): total+= v
+    for k, v in dtypes.items():
+        print(k, v, v/total)
 
 # %%

@@ -209,6 +209,14 @@ class TrainingArguments(transformers.Seq2SeqTrainingArguments):
         default='qlora', 
         metadata={"help": 'Select the finetuning method: std, lora, or qlora'}
         )
+    profile: bool = field(
+        default=False,
+        metadata={"help": 'Collect profiling metrics for CUDA Kernel'}
+    )
+    run_name: str = field(
+        default="train",
+        metadata={"help": 'Indicate the name of the run to easily organize output data'}
+    )
 
 #%% GenerationArguments class
 @dataclass
@@ -227,19 +235,45 @@ class GenerationArguments:
     )
 
     # Generation strategy
-    do_sample: Optional[bool] = field(default=False)
-    num_beams: Optional[int] = field(default=1)
-    num_beam_groups: Optional[int] = field(default=1)
-    penalty_alpha: Optional[float] = field(default=None)
-    use_cache: Optional[bool] = field(default=True)
+    do_sample: Optional[bool] = field(
+        default=False
+        )
+    num_beams: Optional[int] = field(
+        default=1
+        )
+    num_beam_groups: Optional[int] = field(
+        default=1
+        )
+    penalty_alpha: Optional[float] = field(
+        default=None
+        )
+    use_cache: Optional[bool] = field(
+        default=True
+        )
 
     # Hyperparameters for logit manipulation
-    temperature: Optional[float] = field(default=1.0)
-    top_k: Optional[int] = field(default=50)
-    top_p: Optional[float] = field(default=1.0)
-    typical_p: Optional[float] = field(default=1.0)
-    diversity_penalty: Optional[float] = field(default=0.0)
-    repetition_penalty: Optional[float] = field(default=1.0)
-    length_penalty: Optional[float] = field(default=1.0)
-    no_repeat_ngram_size: Optional[int] = field(default=0)
+    temperature: Optional[float] = field(
+        default=1.0
+        )
+    top_k: Optional[int] = field(
+        default=50
+        )
+    top_p: Optional[float] = field(
+        default=1.0
+        )
+    typical_p: Optional[float] = field(
+        default=1.0
+        )
+    diversity_penalty: Optional[float] = field(
+        default=0.0
+        )
+    repetition_penalty: Optional[float] = field(
+        default=1.0
+        )
+    length_penalty: Optional[float] = field(
+        default=1.0
+        )
+    no_repeat_ngram_size: Optional[int] = field(
+        default=0
+        )
 # %%
