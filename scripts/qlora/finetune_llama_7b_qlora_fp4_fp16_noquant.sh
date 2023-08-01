@@ -2,9 +2,9 @@
 ### Configurable
 # Before run, please set environment variable: export DEVICES='DeviceID'
 export CPREC='fp16'
-export SPREC='fp16'
-export METHOD='lora'
-export LOADBIT=16
+export SPREC='fp4'
+export METHOD='qlora'
+export LOADBIT=4
 export MODELHUB='huggyllama'
 export MODELNAME='llama-7b'
 export DATASET='oasst1'

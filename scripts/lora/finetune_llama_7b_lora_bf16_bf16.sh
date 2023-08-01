@@ -1,8 +1,8 @@
 #!/bin/bash
 ### Configurable
 # Before run, please set environment variable: export DEVICES='DeviceID'
-export CPREC='fp16'
-export SPREC='fp16'
+export CPREC='bf16'
+export SPREC='bf16'
 export METHOD='lora'
 export LOADBIT=16
 export MODELHUB='huggyllama'

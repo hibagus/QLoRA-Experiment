@@ -61,7 +61,7 @@ python ../../finetune.py \
     --target_max_len 512 \
     --per_device_train_batch_size 1 \
     --gradient_accumulation_steps 16 \
-    --max_steps 16 \
+    --max_steps 256 \
     --eval_steps 256 \
     --learning_rate 0.0002 \
     --adam_beta2 0.999 \
