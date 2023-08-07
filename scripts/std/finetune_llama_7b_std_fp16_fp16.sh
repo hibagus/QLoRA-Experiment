@@ -44,6 +44,8 @@ python ../../finetune.py \
     --logging_strategy steps \
     --remove_unused_columns False \
     --do_train \
+    --do_eval \
+    --do_mmlu_eval \
     --mmlu_dataset mmlu-fs \
     --mmlu_path ../../data/mmlu/ \
     --lora_r 64 \
@@ -61,7 +63,7 @@ python ../../finetune.py \
     --target_max_len 512 \
     --per_device_train_batch_size 1 \
     --gradient_accumulation_steps 16 \
-    --max_steps 256 \
+    --max_steps 2048 \
     --eval_steps 256 \
     --learning_rate 0.0002 \
     --adam_beta2 0.999 \

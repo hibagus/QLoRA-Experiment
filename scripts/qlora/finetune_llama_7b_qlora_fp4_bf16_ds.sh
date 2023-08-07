@@ -1,12 +1,12 @@
 #!/bin/bash
 ### Configurable
 # Before run, please set environment variable: export DEVICES='DeviceID'
-export CPREC='fp16'
-export SPREC='nf4'
+export CPREC='bf16'
+export SPREC='fp4'
 export METHOD='qlora'
 export LOADBIT=4
-export MODELHUB='meta-llama'
-export MODELNAME='Llama-2-7b-hf'
+export MODELHUB='huggyllama'
+export MODELNAME='llama-7b'
 export DATASET='oasst1'
 export DOUBLEQUANT='True'
 export PROFILE='False'
@@ -23,7 +23,8 @@ exec 19> $LOG
 export BASH_XTRACEFD="19"
 set -x
 
-python ../../finetune.py \
+deepspeed ../../finetune.py \
+    --deepspeed ../../deepspeed/flops_profiler.json \
     --method $METHOD \
     --profile $PROFILE \
     --model_name_or_path $MODELHUB/$MODELNAME \
@@ -44,7 +45,7 @@ python ../../finetune.py \
     --logging_strategy steps \
     --remove_unused_columns False \
     --do_train \
-        --do_eval \
+    --do_eval \
     --do_mmlu_eval \
     --mmlu_dataset mmlu-fs \
     --mmlu_path ../../data/mmlu/ \
@@ -63,15 +64,14 @@ python ../../finetune.py \
     --target_max_len 512 \
     --per_device_train_batch_size 1 \
     --gradient_accumulation_steps 16 \
-    --max_steps 2048 \
+    --max_steps 128 \
     --eval_steps 256 \
     --learning_rate 0.0002 \
     --adam_beta2 0.999 \
     --max_grad_norm 0.3 \
     --lora_dropout 0.1 \
     --weight_decay 0.0 \
-    --seed 0 \
-    --use_auth
+    --seed 0
 
 
 

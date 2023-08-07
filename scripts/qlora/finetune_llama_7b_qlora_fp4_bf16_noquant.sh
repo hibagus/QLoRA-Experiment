@@ -44,6 +44,8 @@ python ../../finetune.py \
     --logging_strategy steps \
     --remove_unused_columns False \
     --do_train \
+    --do_eval \
+    --do_mmlu_eval \
     --mmlu_dataset mmlu-fs \
     --mmlu_path ../../data/mmlu/ \
     --lora_r 64 \
