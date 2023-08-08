@@ -101,14 +101,26 @@ def train():
 
     # Tokenizer
     try: 
-        tokenizer = AutoTokenizer.from_pretrained(
-            args.model_name_or_path,
-            cache_dir=args.cache_dir,
-            padding_side="right",
-            use_fast=False, # Fast tokenizer giving issues.
-            tokenizer_type='llama' if 'llama' in args.model_name_or_path else None, # Needed for HF name change
-            use_auth_token=args.use_auth_token,
-        )
+        if 'llama' in args.model_name_or_path:
+            tokenizer = AutoTokenizer.from_pretrained(
+                args.model_name_or_path,
+                cache_dir=args.cache_dir,
+                padding_side="right",
+                use_fast=False, # Fast tokenizer giving issues.
+                tokenizer_type='llama' if 'llama' in args.model_name_or_path else None, # Needed for HF name change
+                use_auth_token=args.use_auth_token,
+            )
+        elif 'falcon' in args.model_name_or_path:
+            tokenizer = AutoTokenizer.from_pretrained(
+                args.model_name_or_path,
+                cache_dir=args.cache_dir,
+                padding_side="right",
+                use_fast=False, # Fast tokenizer giving issues.
+                tokenizer_type=None, # Needed for HF name change
+                use_auth_token=args.use_auth_token,
+                add_bos_token=False,
+            )
+
     except ValueError:
          tokenizer = AutoTokenizer.from_pretrained(
             args.model_name_or_path,
@@ -137,6 +149,15 @@ def train():
                     model.config.pad_token_id if model.config.pad_token_id != -1 else tokenizer.pad_token_id
                 ),
         })
+
+    if 'falcon' in args.model_name_or_path:
+        print('Adding special tokens.')
+        tokenizer.add_special_tokens({
+                "eos_token": tokenizer.convert_ids_to_tokens(model.config.eos_token_id),
+                "bos_token": tokenizer.convert_ids_to_tokens(model.config.bos_token_id),
+                "unk_token": tokenizer.convert_ids_to_tokens(model.config.eos_token_id),
+        })
+    
     data_module = make_data_module(tokenizer=tokenizer, args=args)
     trainer = Seq2SeqTrainer(
         model=model,
