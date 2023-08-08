@@ -120,6 +120,11 @@ def train():
                 use_auth_token=args.use_auth_token,
                 add_bos_token=False,
             )
+        else:
+            tokenizer = AutoTokenizer.from_pretrained(
+                args.model_name_or_path,
+                use_auth_token=args.use_auth_token,
+            )
 
     except ValueError:
          tokenizer = AutoTokenizer.from_pretrained(
