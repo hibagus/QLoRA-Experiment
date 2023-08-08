@@ -70,7 +70,8 @@ accelerate launch --multi_gpu --num_processes 4 --num_machines 1  --mixed_precis
     --max_grad_norm 0.3 \
     --lora_dropout 0.1 \
     --weight_decay 0.0 \
-    --seed 0
+    --seed 0 \
+    --trust_remote_code True
 
 
 

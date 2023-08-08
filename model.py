@@ -182,7 +182,8 @@ def get_accelerate_model_standard(args, checkpoint_dir):
         max_memory=max_memory,
         torch_dtype=(torch.float16 if args.fp16 else (torch.bfloat16 if args.bf16 else torch.float32)),
         trust_remote_code=args.trust_remote_code,
-        use_auth_token=args.use_auth_token
+        use_auth_token=args.use_auth_token,
+        offload_folder="../../save_folder"
     )
 
     setattr(model, 'model_parallel', True)
