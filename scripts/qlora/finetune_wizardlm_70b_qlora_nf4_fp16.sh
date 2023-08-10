@@ -1,16 +1,15 @@
 #!/bin/bash
 ### Configurable
 # Before run, please set environment variable: export DEVICES='DeviceID'
-export CPREC='bf16'
-export SPREC='fp16'
-export METHOD='std'
-export LOADBIT=16
-export MODELHUB='huggyllama'
-export MODELNAME='llama-65b'
+export CPREC='fp16'
+export SPREC='nf4'
+export METHOD='qlora'
+export LOADBIT=4
+export MODELHUB='WizardLM'
+export MODELNAME='WizardLM-70B-V1.0'
 export DATASET='oasst1'
-export DOUBLEQUANT='False'
+export DOUBLEQUANT='True'
 export PROFILE='False'
-
 
 ### Do not touch
 DATE=$(date '+%Y%m%d-%H%M%S')
@@ -24,8 +23,7 @@ exec 19> $LOG
 export BASH_XTRACEFD="19"
 set -x
 
-deepspeed --num_gpus=4 ../../finetune.py \
-    --deepspeed ../../deepspeed/distributed.json \
+python ../../finetune.py \
     --method $METHOD \
     --profile $PROFILE \
     --model_name_or_path $MODELHUB/$MODELNAME \
@@ -72,7 +70,8 @@ deepspeed --num_gpus=4 ../../finetune.py \
     --max_grad_norm 0.3 \
     --lora_dropout 0.1 \
     --weight_decay 0.0 \
-    --seed 0
+    --seed 0 \
+    --use_auth
 
 
 

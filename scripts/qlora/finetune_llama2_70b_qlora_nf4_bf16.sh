@@ -13,6 +13,7 @@ export PROFILE='False'
 
 ### Do not touch
 DATE=$(date '+%Y%m%d-%H%M%S')
+mkdir -p ../../log
 export LOG=../../log/$DATE-$DEVICE-$METHOD-$DATASET-$SPREC-$CPREC-$DOUBLEQUANT.log
 
 exec   > >(tee -ia $LOG)
