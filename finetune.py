@@ -124,6 +124,7 @@ def train():
             tokenizer = AutoTokenizer.from_pretrained(
                 args.model_name_or_path,
                 use_auth_token=args.use_auth_token,
+                use_fast=False, # Fast tokenizer giving issues.
             )
 
     except ValueError:
