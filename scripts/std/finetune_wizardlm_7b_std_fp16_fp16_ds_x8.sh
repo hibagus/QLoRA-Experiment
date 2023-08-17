@@ -1,14 +1,14 @@
 #!/bin/bash
 ### Configurable
 # Before run, please set environment variable: export DEVICES='DeviceID'
-export CPREC='bf16'
-export SPREC='fp4'
-export METHOD='qlora'
-export LOADBIT=4
-export MODELHUB='huggyllama'
-export MODELNAME='llama-7b'
+export CPREC='fp16'
+export SPREC='fp16'
+export METHOD='std'
+export LOADBIT=16
+export MODELHUB='WizardLM'
+export MODELNAME='WizardLM-7B-V1.0'
 export DATASET='oasst1'
-export DOUBLEQUANT='True'
+export DOUBLEQUANT='False'
 export PROFILE='False'
 
 
@@ -24,8 +24,8 @@ exec 19> $LOG
 export BASH_XTRACEFD="19"
 set -x
 
-deepspeed ../../finetune.py \
-    --deepspeed ../../deepspeed/flops_profiler.json \
+deepspeed --num_gpus=8 ../../finetune.py \
+    --deepspeed ../../deepspeed/distributed.json \
     --method $METHOD \
     --profile $PROFILE \
     --model_name_or_path $MODELHUB/$MODELNAME \
@@ -65,7 +65,7 @@ deepspeed ../../finetune.py \
     --target_max_len 512 \
     --per_device_train_batch_size 1 \
     --gradient_accumulation_steps 16 \
-    --max_steps 128 \
+    --max_steps 2048 \
     --eval_steps 256 \
     --learning_rate 0.0002 \
     --adam_beta2 0.999 \
