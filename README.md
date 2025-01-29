@@ -38,7 +38,10 @@
     <li><a href="#known-problem-and-solution">Known Problem and Solution</a></li>
       <ul>
         <li><a href="#bitsandbytes-cuda-runtime-error">BitsandBytes CUDA Runtime Error</a></li>
-        <li><a href="#installation">Installation</a></li>
+        <li><a href="#huggingface-hub-localtokennotfound-error">HuggingFace Hub LocalTokenNotFound Error</a></li>
+        <li><a href="#huggingface-hub-keyerror-tags">HuggingFace Hub KeyError Tags</a></li>
+        <li><a href="#pytorch-unscale-fp16-gradients-error">PyTorch Unscale FP16 Gradients Error</a></li>
+        <li><a href="#qlora-multiple-gpus-tensor-storage-error">QLoRA Multiple GPUs Tensor Storage Error</a></li>
       </ul>
     <li><a href="#license">License</a></li>
   </ol>
@@ -51,7 +54,6 @@ We followed the ICPE Artifact Evaluation Track to improve reproducibility of our
 However, as the contents provided here are tested with specific version of libraries, they may not work with newer version of libraries. 
 
 ### Built With
-This section should list any major frameworks that you built your project using. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 * [HuggingFace Transformers](https://github.com/huggingface/transformers)
 * [HuggingFace Evaluate](https://github.com/huggingface/evaluate)
 * [HuggingFace PEFT (Parameter-Efficient Fine-Tuning)](https://github.com/huggingface/peft)
@@ -111,7 +113,7 @@ cd logfiles
 Below are several known problems and solutions.
 
 ### BitsandBytes CUDA Runtime Error
-* BitsandBytes complain CUDA SETUP error with the following message:
+* BitsandBytes complains CUDA SETUP error with the following message:
 ```sh
 ================================================ERROR=====================================
 CUDA SETUP: CUDA detection failed! Possible reasons:
@@ -127,22 +129,70 @@ CUDA SETUP: The CUDA version for the compile might depend on your conda install.
 
 * There are two solutions described below.
   1. Build BitsandBytes from source. This is the recommended way, but the most difficult to accomplish. It may not be straightforward since your PyTorch must match the version of CUDA Toolkit you've installed.
-  ```sh
-  git clone https://github.com/bitsandbytes-foundation/bitsandbytes.git
-  cd bitsandbytes
-  git checkout 0.40.0 # You can always try newer version if you wish
-  CUDA_VERSION=XXX # Replace XXX with your CUDA Toolkit version
-  python setup.py install
-  ```
+      ```sh
+      git clone https://github.com/bitsandbytes-foundation/bitsandbytes.git
+      cd bitsandbytes
+      git checkout 0.40.0 # You can always try newer version if you wish
+      CUDA_VERSION=XXX # Replace XXX with your CUDA Toolkit version
+      python setup.py install
+      ```
   2. Force BitsandBytes to use shared object library (`.so`) precompiled for older CUDA version. This is the easiest and would work for CUDA Toolkit with different minor version (i.e., 12.2 with 12.4). However, it may not reflect the performance improvements that might be provided with newer CUDA Toolkit version.
-  ```sh
-  # assuming you use Anaconda and you installed anaconda in your home directory and you use CUDA Toolkit version 12.8
-  cd /home/[username]/anaconda3/envs/[virtual_env_name]/lib/python3.11/site-packages/bitsandbytes
-  # replace [username] with your username
-  # replace [virtual_env_name] with the name you've given.
-  ln -s libbitsandbytes_cuda122.so libbitsandbytes_cuda128.so
-  ```
+      ```sh
+      # assuming you use Anaconda and you installed anaconda in your home directory and you use CUDA Toolkit version 12.8
+      cd /home/[username]/anaconda3/envs/[virtual_env_name]/lib/python3.11/site-packages/bitsandbytes
+      # replace [username] with your username
+      # replace [virtual_env_name] with the name you've given.
+      ln -s libbitsandbytes_cuda122.so libbitsandbytes_cuda128.so
+      ```
 
+### HuggingFace Hub LocalTokenNotFound Error
+* HuggingFace Hub complains error with the following message:
+```sh
+huggingface_hub.errors.LocalTokenNotFoundError: Token is required (`token=True`), but no token found. You need to provide a token or be logged in to Hugging Face with `huggingface-cli login` or `huggingface_hub.login`. See https://huggingface.co/settings/tokens.
+```
+* Solution is described below.
+  1. Login to the HuggingFace on your browser using your username and password. Please register if you don't have account.
+  2. Click on your user photo, go to `Settings` and `Access Token`
+  3. Create new token and give it name. We recommend Read-Only token for simplicity.
+  4. Copy the token to your clipboard.
+  5. Run command below in terminal:
+     ```sh
+     huggingface-cli login
+     ```
+  6. Paste the token and press enter.
+  7. You can try to run the script again.
+
+### HuggingFace Hub KeyError Tags
+* HuggingFace Hub complains error with the following message:
+```sh
+KeyError: 'tags'
+```
+* Solution is to update the HuggingFace Hub from 0.23.0 to 0.27.1
+```sh
+pip install huggingface-hub==0.27.1
+```
+
+### PyTorch Unscale FP16 Gradients Error
+* PyTorch complains error with the following message:
+```sh
+ValueError: Attempting to unscale FP16 gradients.
+```
+
+* Solution is to change `CPREC` inside the finetuning script from `fp16` to `fp32`
+```sh
+export CPREC='fp32'
+```
+
+### QLoRA Multiple GPUs Tensor Storage Error
+* When running fine-tuning with QLoRA in a system with multiple GPUs, PyTorch complains error with the following message:
+```sh
+RuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:6 and cuda:7! (when checking argument for argument mat2 in method wrapper_CUDA_mm)
+```
+
+* Solution is to isolate only one GPU you want to use for fine-tuning since QLoRA (provided here) does not support multi-GPU training (yet).
+```sh
+export CUDA_VISIBLE_DEVICES=0
+```
 
 ## License
 
