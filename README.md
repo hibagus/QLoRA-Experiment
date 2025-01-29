@@ -123,25 +123,25 @@ CUDA SETUP: If you compiled from source, try again with `make CUDA_VERSION=DETEC
 CUDA SETUP: The CUDA version for the compile might depend on your conda install. Inspect CUDA version via `conda list | grep cuda`.
 ================================================================================
 ```
-This happens when you have newer version of CUDA Toolkit installed (i.e., newer than version 12.2).
+  This happens when you have newer version of CUDA Toolkit installed (i.e., newer than version 12.2).
 
 * There are two solutions described below.
-1. Build BitsandBytes from source. This is the recommended way, but the most difficult to accomplish. It may not be straightforward since your PyTorch must match the version of CUDA Toolkit you've installed.
-```sh
-git clone https://github.com/bitsandbytes-foundation/bitsandbytes.git
-cd bitsandbytes
-git checkout 0.40.0 # You can always try newer version if you wish
-CUDA_VERSION=XXX # Replace XXX with your CUDA Toolkit version
-python setup.py install
-```
-2. Force BitsandBytes to use shared object library (`.so`) precompiled for older CUDA version. This is the easiest and would work for CUDA Toolkit with different minor version (i.e., 12.2 with 12.4). However, it may not reflect the performance improvements that might be provided with newer CUDA Toolkit version.
-```sh
-# assuming you use Anaconda and you installed anaconda in your home directory and you use CUDA Toolkit version 12.8
-cd /home/[username]/anaconda3/envs/[virtual_env_name]/lib/python3.11/site-packages/bitsandbytes
-# replace [username] with your username
-# replace [virtual_env_name] with the name you've given.
-ln -s libbitsandbytes_cuda122.so libbitsandbytes_cuda128.so
-```
+  1. Build BitsandBytes from source. This is the recommended way, but the most difficult to accomplish. It may not be straightforward since your PyTorch must match the version of CUDA Toolkit you've installed.
+  ```sh
+  git clone https://github.com/bitsandbytes-foundation/bitsandbytes.git
+  cd bitsandbytes
+  git checkout 0.40.0 # You can always try newer version if you wish
+  CUDA_VERSION=XXX # Replace XXX with your CUDA Toolkit version
+  python setup.py install
+  ```
+  2. Force BitsandBytes to use shared object library (`.so`) precompiled for older CUDA version. This is the easiest and would work for CUDA Toolkit with different minor version (i.e., 12.2 with 12.4). However, it may not reflect the performance improvements that might be provided with newer CUDA Toolkit version.
+  ```sh
+  # assuming you use Anaconda and you installed anaconda in your home directory and you use CUDA Toolkit version 12.8
+  cd /home/[username]/anaconda3/envs/[virtual_env_name]/lib/python3.11/site-packages/bitsandbytes
+  # replace [username] with your username
+  # replace [virtual_env_name] with the name you've given.
+  ln -s libbitsandbytes_cuda122.so libbitsandbytes_cuda128.so
+  ```
 
 
 ## License
